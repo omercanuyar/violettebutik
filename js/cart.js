@@ -232,10 +232,8 @@
         return lines.join('\n');
     }
 
-    function init() {
-        renderCart();
+    document.addEventListener('DOMContentLoaded', function() {
         initCheckout();
-    }
-
-    document.addEventListener('DOMContentLoaded', init);
+    });
+    onCloudDataReady(renderCart);
 })();

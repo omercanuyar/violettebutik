@@ -135,10 +135,10 @@
     }
 
     function init() {
-        loadProduct();
         initQuantity();
         initAddToCart();
     }
 
     document.addEventListener('DOMContentLoaded', init);
+    onCloudDataReady(loadProduct);
 })();

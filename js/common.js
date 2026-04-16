@@ -4,6 +4,70 @@
 
 'use strict';
 
+/* ===== BULUT VERİ SENKRONİZASYONU (Firebase Realtime DB) ===== */
+var _cloudDataReady = false;
+var _cloudCallbacks = [];
+
+function onCloudDataReady(fn) {
+    if (_cloudDataReady) {
+        fn();
+    } else {
+        _cloudCallbacks.push(fn);
+    }
+}
+
+function _fireCloudCallbacks() {
+    _cloudDataReady = true;
+    for (var i = 0; i < _cloudCallbacks.length; i++) {
+        try { _cloudCallbacks[i](); } catch(e) { console.error(e); }
+    }
+    _cloudCallbacks = [];
+}
+
+function _getFirebaseURL() {
+    var url = (STORE_DATA.settings && STORE_DATA.settings.firebaseURL)
+        ? STORE_DATA.settings.firebaseURL.replace(/\/+$/, '') : '';
+    return url;
+}
+
+function loadFromCloud() {
+    var url = _getFirebaseURL();
+    if (!url) {
+        setTimeout(_fireCloudCallbacks, 0);
+        return;
+    }
+    fetch(url + '/store.json')
+        .then(function(res) {
+            if (!res.ok) throw new Error('Network error');
+            return res.json();
+        })
+        .then(function(data) {
+            if (data && Array.isArray(data.products)) {
+                var fbUrl = STORE_DATA.settings.firebaseURL;
+                STORE_DATA.products = data.products;
+                STORE_DATA.categories = data.categories || STORE_DATA.categories;
+                if (data.settings) STORE_DATA.settings = data.settings;
+                STORE_DATA.settings.firebaseURL = fbUrl;
+            }
+        })
+        .catch(function() { /* çevrimdışı veya hata - yerel veri kullanılır */ })
+        .then(function() { _fireCloudCallbacks(); });
+}
+
+function saveToCloud(data) {
+    var url = _getFirebaseURL();
+    if (!url) return Promise.resolve();
+    var payload = JSON.parse(JSON.stringify(data));
+    delete payload.settings.firebaseURL;
+    return fetch(url + '/store.json', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(function() {
+        showToast('Bulut senkronizasyonu başarısız oldu', 'error');
+    });
+}
+
 /* ===== GÜVENLİK: XSS TEMİZLEME ===== */
 function sanitize(str) {
     if (typeof str !== 'string') return '';
@@ -321,6 +385,7 @@ function initCommon() {
     initHeaderScroll();
     initMobileMenu();
     updateCartBadge();
+    loadFromCloud();
 }
 
 document.addEventListener('DOMContentLoaded', initCommon);

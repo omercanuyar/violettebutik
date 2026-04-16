@@ -2,12 +2,13 @@
    Bu dosya admin panelinden dışa aktarılarak güncellenir.
    Elle düzenlemeyin - admin panelini kullanın. */
 
-const STORE_DATA = {
+var STORE_DATA = {
     version: 1,
     settings: {
         storeName: "Violette Butik",
         tagline: "Anadolu'nun Zarif Dokunuşu",
         whatsappNumber: "905432105555",
+        firebaseURL: "https://violette-butik-default-rtdb.europe-west1.firebasedatabase.app",
         currency: "₺",
         about: {
             title: "Violette Butik",

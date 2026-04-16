@@ -189,7 +189,7 @@
     <script src="js/data.js"></script>
     <script src="js/common.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        onCloudDataReady(function() {
             var s = STORE_DATA.settings.about;
             if (s.title) document.getElementById('about-title').textContent = s.title;
             if (s.subtitle) document.getElementById('about-subtitle').textContent = s.subtitle;

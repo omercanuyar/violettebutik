@@ -23,25 +23,6 @@
             <h2>Yönetim Paneli</h2>
             <p class="subtitle">Devam etmek için giriş yapın</p>
 
-            <!-- İLK KURULUM -->
-            <div id="setup-section" style="display:none;">
-                <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px;">İlk kurulum: Yönetici bilgilerinizi belirleyin.</p>
-                <div class="form-group">
-                    <label>Kullanıcı Adı <span class="required">*</span></label>
-                    <input type="text" class="form-input" id="setup-username" placeholder="Kullanıcı adı" maxlength="50" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label>Şifre <span class="required">*</span></label>
-                    <input type="password" class="form-input" id="setup-password" placeholder="Güçlü bir şifre belirleyin" maxlength="100" autocomplete="new-password">
-                </div>
-                <div class="form-group">
-                    <label>Şifre Tekrar <span class="required">*</span></label>
-                    <input type="password" class="form-input" id="setup-password2" placeholder="Şifrenizi tekrar girin" maxlength="100" autocomplete="new-password">
-                </div>
-                <div class="login-error" id="setup-error"></div>
-                <button class="btn btn-primary btn-block btn-lg" id="setup-btn" type="button">Kurulumu Tamamla</button>
-            </div>
-
             <!-- GİRİŞ FORMU -->
             <form id="login-form" style="display:none;" autocomplete="off">
                 <div class="login-error" id="login-error"></div>
@@ -197,6 +178,15 @@
                         <label>WhatsApp Numara (ülke kodu ile, boşluksuz)</label>
                         <input type="text" class="form-input" id="setting-whatsapp" maxlength="20" placeholder="905XXXXXXXXX">
                     </div>
+
+                    <h3 style="margin:24px 0 16px;">Veritabanı Bağlantısı</h3>
+                    <div class="form-group">
+                        <label>Firebase Realtime Database URL</label>
+                        <input type="url" class="form-input" id="setting-firebase-url" maxlength="200" placeholder="https://proje-adi-default-rtdb.firebaseio.com">
+                        <span class="form-hint">Bu alan doldurulduğunda ürünler bulutta saklanır ve tüm ziyaretçilere görünür.</span>
+                    </div>
+                    <div id="firebase-status" style="margin-bottom:16px;"></div>
+
                     <h3 style="margin:24px 0 16px;">Hakkımızda İçeriği</h3>
                     <div class="form-group">
                         <label>Hikaye</label>

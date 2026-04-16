@@ -152,7 +152,7 @@
         }
     };
 
-    function init() {
+    function renderAll() {
         renderCategories();
         renderNewProducts();
         renderBestSellers();
@@ -161,5 +161,5 @@
         initScrollAnimation();
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    onCloudDataReady(renderAll);
 })();

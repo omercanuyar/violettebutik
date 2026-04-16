@@ -7,15 +7,10 @@
 
 (function() {
     /* ===== SABİTLER ===== */
-    var AUTH_KEY = 'vb_admin_auth';
-    var CREDS_KEY = 'vb_admin_creds';
-    var ATTEMPTS_KEY = 'vb_login_attempts';
+    var ATTEMPTS_KEY = 'vb_la';
     var SESSION_KEY = 'vb_admin_session';
     var LOCAL_DATA_KEY = 'vb_store_data';
-    var MAX_ATTEMPTS = 5;
-    var LOCKOUT_MS = 5 * 60 * 1000;
     var SESSION_TIMEOUT_MS = 30 * 60 * 1000;
-    var SALT = 'vB_s4lt_2024!_x7k';
     var MAX_IMAGE_WIDTH = 600;
     var IMAGE_QUALITY = 0.65;
     var MAX_IMAGES = 3;
@@ -23,57 +18,57 @@
     var workingData = null;
     var deleteTargetId = null;
 
-    /* ===== SHA-256 HASH ===== */
-    function sha256(text) {
-        var data = new TextEncoder().encode(text);
-        return crypto.subtle.digest('SHA-256', data).then(function(buf) {
-            return Array.from(new Uint8Array(buf)).map(function(b) {
-                return b.toString(16).padStart(2, '0');
-            }).join('');
-        });
+    /* ===== STATİK KİMLİK BİLGİLERİ ===== */
+    /* Credentials: violetteadmin / Vlt@Butik2024! */
+    function _gc() {
+        var a = [118,105,111,108,101,116,116,101,97,100,109,105,110];
+        var b = [86,108,116,64,66,117,116,105,107,50,48,50,52,33];
+        return {
+            u: String.fromCharCode.apply(null, a),
+            p: String.fromCharCode.apply(null, b)
+        };
     }
 
-    /* ===== KİMLİK DOĞRULAMA ===== */
-    function hasCredentials() {
-        return !!localStorage.getItem(CREDS_KEY);
+    function verifyCredentials(username, password) {
+        var c = _gc();
+        return username === c.u && password === c.p;
     }
 
-    function getStoredCredentials() {
+    /* ===== GİRİŞ DENEME TAKİBİ (localStorage - kalıcı, tarayıcı kapansa bile) ===== */
+    function getAttemptData() {
         try {
-            return JSON.parse(localStorage.getItem(CREDS_KEY));
+            return JSON.parse(localStorage.getItem(ATTEMPTS_KEY)) || { c: 0, t: 0 };
         } catch(e) {
-            return null;
+            return { c: 0, t: 0 };
         }
+    }
+
+    function getLockoutMs(count) {
+        if (count >= 15) return 86400000;   /* 24 saat */
+        if (count >= 10) return 3600000;    /* 1 saat  */
+        if (count >= 5)  return 900000;     /* 15 dk   */
+        return 0;
     }
 
     function isLockedOut() {
-        try {
-            var data = JSON.parse(sessionStorage.getItem(ATTEMPTS_KEY));
-            if (!data) return false;
-            if (data.count >= MAX_ATTEMPTS) {
-                var elapsed = Date.now() - data.lastAttempt;
-                if (elapsed < LOCKOUT_MS) {
-                    return Math.ceil((LOCKOUT_MS - elapsed) / 1000);
-                }
-                sessionStorage.removeItem(ATTEMPTS_KEY);
-            }
-            return false;
-        } catch(e) {
-            return false;
-        }
+        var d = getAttemptData();
+        var lockMs = getLockoutMs(d.c);
+        if (!lockMs) return false;
+        var remaining = lockMs - (Date.now() - d.t);
+        if (remaining > 0) return Math.ceil(remaining / 1000);
+        /* Süre doldu ama deneme sayısı sıfırlanmaz - kademeli artar */
+        return false;
     }
 
     function recordFailedAttempt() {
-        try {
-            var data = JSON.parse(sessionStorage.getItem(ATTEMPTS_KEY)) || { count: 0, lastAttempt: 0 };
-            data.count++;
-            data.lastAttempt = Date.now();
-            sessionStorage.setItem(ATTEMPTS_KEY, JSON.stringify(data));
-        } catch(e) {}
+        var d = getAttemptData();
+        d.c++;
+        d.t = Date.now();
+        localStorage.setItem(ATTEMPTS_KEY, JSON.stringify(d));
     }
 
     function clearAttempts() {
-        sessionStorage.removeItem(ATTEMPTS_KEY);
+        localStorage.removeItem(ATTEMPTS_KEY);
     }
 
     function createSession() {
@@ -107,71 +102,27 @@
 
     /* ===== BAŞLATMA ===== */
     function init() {
+        /* Eski kurulum verilerini temizle */
+        localStorage.removeItem('vb_admin_creds');
+        localStorage.removeItem('vb_login_attempts');
+
         if (isSessionValid()) {
             initDashboard();
             return;
         }
-
-        if (!hasCredentials()) {
-            showSetup();
-        } else {
-            showLogin();
-        }
-    }
-
-    /* ===== İLK KURULUM ===== */
-    function showSetup() {
-        document.getElementById('setup-section').style.display = 'block';
-        document.getElementById('login-form').style.display = 'none';
-
-        document.getElementById('setup-btn').addEventListener('click', function() {
-            var username = document.getElementById('setup-username').value.trim();
-            var password = document.getElementById('setup-password').value;
-            var password2 = document.getElementById('setup-password2').value;
-            var errorEl = document.getElementById('setup-error');
-
-            errorEl.classList.remove('show');
-
-            if (!username || username.length < 3) {
-                errorEl.textContent = 'Kullanıcı adı en az 3 karakter olmalı.';
-                errorEl.classList.add('show');
-                return;
-            }
-            if (!password || password.length < 6) {
-                errorEl.textContent = 'Şifre en az 6 karakter olmalı.';
-                errorEl.classList.add('show');
-                return;
-            }
-            if (password !== password2) {
-                errorEl.textContent = 'Şifreler eşleşmiyor.';
-                errorEl.classList.add('show');
-                return;
-            }
-
-            Promise.all([
-                sha256(username + SALT),
-                sha256(password + SALT)
-            ]).then(function(hashes) {
-                var creds = { u: hashes[0], p: hashes[1] };
-                localStorage.setItem(CREDS_KEY, JSON.stringify(creds));
-                createSession();
-                clearAttempts();
-                initDashboard();
-            });
-        });
+        showLogin();
     }
 
     /* ===== GİRİŞ ===== */
     function showLogin() {
-        document.getElementById('setup-section').style.display = 'none';
         document.getElementById('login-form').style.display = 'block';
 
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            var lockSec2 = isLockedOut();
-            if (lockSec2) {
-                showLockout(lockSec2);
+            var lockSec = isLockedOut();
+            if (lockSec) {
+                showLockout(lockSec);
                 return;
             }
 
@@ -186,28 +137,22 @@
                 return;
             }
 
-            var creds = getStoredCredentials();
-            if (!creds) return;
-
-            Promise.all([
-                sha256(username + SALT),
-                sha256(password + SALT)
-            ]).then(function(hashes) {
-                if (hashes[0] === creds.u && hashes[1] === creds.p) {
-                    clearAttempts();
-                    createSession();
-                    initDashboard();
+            if (verifyCredentials(username, password)) {
+                clearAttempts();
+                createSession();
+                initDashboard();
+            } else {
+                recordFailedAttempt();
+                var lockSec2 = isLockedOut();
+                if (lockSec2) {
+                    showLockout(lockSec2);
                 } else {
-                    recordFailedAttempt();
-                    var lockSec3 = isLockedOut();
-                    if (lockSec3) {
-                        showLockout(lockSec3);
-                    } else {
-                        errorEl.textContent = 'Kullanıcı adı veya şifre hatalı.';
-                        errorEl.classList.add('show');
-                    }
+                    var d = getAttemptData();
+                    var nextLock = 5 - (d.c % 5);
+                    errorEl.textContent = 'Kullanıcı adı veya şifre hatalı. ' + nextLock + ' deneme hakkı kaldı.';
+                    errorEl.classList.add('show');
                 }
-            });
+            }
         });
 
         var lockSec = isLockedOut();
@@ -216,10 +161,19 @@
         }
     }
 
-    function showLockout(seconds) {
+    function showLockout() {
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('lockout-section').style.display = 'block';
         var msgEl = document.getElementById('lockout-msg');
+        var d = getAttemptData();
+
+        function formatTime(totalSec) {
+            var h = Math.floor(totalSec / 3600);
+            var m = Math.floor((totalSec % 3600) / 60);
+            var s = totalSec % 60;
+            if (h > 0) return h + ' saat ' + m + ' dk ' + s + ' sn';
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
 
         function tick() {
             var s = isLockedOut();
@@ -228,9 +182,8 @@
                 document.getElementById('lockout-section').style.display = 'none';
                 return;
             }
-            var min = Math.floor(s / 60);
-            var sec = s % 60;
-            msgEl.textContent = 'Çok fazla hatalı deneme. ' + min + ':' + (sec < 10 ? '0' : '') + sec + ' sonra tekrar deneyin.';
+            var level = d.c >= 15 ? '24 saat' : d.c >= 10 ? '1 saat' : '15 dakika';
+            msgEl.textContent = 'Erişim engellendi (' + d.c + ' hatalı deneme). ' + level + ' süreyle kilitlendi. Kalan: ' + formatTime(s);
             setTimeout(tick, 1000);
         }
         tick();
@@ -241,13 +194,6 @@
         document.getElementById('admin-login-page').style.display = 'none';
         var dashboard = document.getElementById('admin-dashboard');
         dashboard.classList.add('active');
-
-        loadWorkingData();
-        renderDashboardStats();
-        renderRecentProducts();
-        renderProductsTable();
-        renderCategoriesList();
-        loadSettings();
 
         initNavigation();
         initProductForm();
@@ -269,35 +215,54 @@
                 location.reload();
             }
         }, 60000);
+
+        /* Buluttan veri yükle, sonra dashboard'u çiz */
+        loadWorkingData();
+    }
+
+    function renderAllDashboard() {
+        renderDashboardStats();
+        renderRecentProducts();
+        renderProductsTable();
+        renderCategoriesList();
+        loadSettings();
     }
 
     /* ===== VERİ YÖNETİMİ ===== */
     function loadWorkingData() {
-        try {
-            var stored = localStorage.getItem(LOCAL_DATA_KEY);
-            if (stored) {
-                var storedData = JSON.parse(stored);
-                /* Deploy edilen data.js daha yeni sürümse onu kullan */
-                if (STORE_DATA.version && (!storedData.version || STORE_DATA.version > storedData.version)) {
-                    workingData = JSON.parse(JSON.stringify(STORE_DATA));
-                    saveWorkingData();
-                } else {
-                    workingData = storedData;
-                }
-            }
-        } catch(e) {}
+        /* Önce yerel veri (anlık gösterim) */
+        workingData = JSON.parse(JSON.stringify(STORE_DATA));
+        renderAllDashboard();
 
-        if (!workingData) {
-            workingData = JSON.parse(JSON.stringify(STORE_DATA));
-        }
+        /* Sonra buluttan güncelle */
+        var url = _getFirebaseURL();
+        if (!url) return;
+
+        fetch(url + '/store.json')
+            .then(function(res) {
+                if (!res.ok) throw new Error('Network');
+                return res.json();
+            })
+            .then(function(data) {
+                if (data && Array.isArray(data.products)) {
+                    var fbUrl = STORE_DATA.settings.firebaseURL;
+                    workingData = data;
+                    if (!workingData.settings) workingData.settings = {};
+                    workingData.settings.firebaseURL = fbUrl;
+                    renderAllDashboard();
+                }
+            })
+            .catch(function() { /* çevrimdışı - yerel veri kullanılır */ });
     }
 
     function saveWorkingData() {
         try {
             localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify(workingData));
         } catch(e) {
-            showToast('Veri kaydedilemedi - depolama alanı yetersiz', 'error');
+            showToast('Veri kaydedilemedi', 'error');
         }
+        /* Buluta senkronize et */
+        saveToCloud(workingData);
     }
 
     function generateId() {
@@ -780,11 +745,19 @@
             workingData.settings.storeName = document.getElementById('setting-store-name').value.trim() || workingData.settings.storeName;
             workingData.settings.tagline = document.getElementById('setting-tagline').value.trim() || workingData.settings.tagline;
             workingData.settings.whatsappNumber = document.getElementById('setting-whatsapp').value.trim().replace(/[^\d]/g, '') || workingData.settings.whatsappNumber;
+
+            /* Firebase URL güncelle */
+            var newFbUrl = document.getElementById('setting-firebase-url').value.trim().replace(/\/+$/, '');
+            workingData.settings.firebaseURL = newFbUrl;
+            STORE_DATA.settings.firebaseURL = newFbUrl;
+
+            if (!workingData.settings.about) workingData.settings.about = {};
             workingData.settings.about.story = document.getElementById('setting-about-story').value.trim();
             workingData.settings.about.mission = document.getElementById('setting-about-mission').value.trim();
             workingData.settings.about.vision = document.getElementById('setting-about-vision').value.trim();
 
             saveWorkingData();
+            updateFirebaseStatus();
             showToast('Ayarlar kaydedildi', 'success');
         });
     }
@@ -794,9 +767,22 @@
         document.getElementById('setting-store-name').value = s.storeName || '';
         document.getElementById('setting-tagline').value = s.tagline || '';
         document.getElementById('setting-whatsapp').value = s.whatsappNumber || '';
+        document.getElementById('setting-firebase-url').value = s.firebaseURL || STORE_DATA.settings.firebaseURL || '';
         document.getElementById('setting-about-story').value = (s.about && s.about.story) || '';
         document.getElementById('setting-about-mission').value = (s.about && s.about.mission) || '';
         document.getElementById('setting-about-vision').value = (s.about && s.about.vision) || '';
+        updateFirebaseStatus();
+    }
+
+    function updateFirebaseStatus() {
+        var el = document.getElementById('firebase-status');
+        if (!el) return;
+        var url = _getFirebaseURL();
+        if (url) {
+            el.innerHTML = '<span style="color: var(--success); font-weight:600;">\u2713 Bulut veritaban\u0131 ba\u011fl\u0131 - \u00fcr\u00fcnler t\u00fcm ziyaret\u00e7ilere g\u00f6r\u00fcn\u00fcr</span>';
+        } else {
+            el.innerHTML = '<span style="color: var(--warning); font-weight:600;">\u26a0 Bulut veritaban\u0131 ba\u011fl\u0131 de\u011fil - \u00fcr\u00fcnler sadece bu taray\u0131c\u0131da g\u00f6r\u00fcn\u00fcr</span>';
+        }
     }
 
     /* ===== DIŞA AKTAR ===== */
@@ -808,7 +794,7 @@
             var content = '/* Violette Butik - Ürün Verileri\n' +
                 '   Bu dosya admin panelinden dışa aktarılarak güncellenir.\n' +
                 '   Elle düzenlemeyin - admin panelini kullanın. */\n\n' +
-                'const STORE_DATA = ' + JSON.stringify(exportData, null, 2) + ';\n';
+                'var STORE_DATA = ' + JSON.stringify(exportData, null, 2) + ';\n';
 
             var blob = new Blob([content], { type: 'application/javascript' });
             var url = URL.createObjectURL(blob);
@@ -838,7 +824,7 @@
             reader.onload = function(e) {
                 try {
                     var text = e.target.result;
-                    var match = text.match(/const\s+STORE_DATA\s*=\s*(\{[\s\S]*\});?\s*$/);
+                    var match = text.match(/(?:const|var)\s+STORE_DATA\s*=\s*(\{[\s\S]*\});?\s*$/);
                     if (!match) {
                         showToast('Geçersiz data.js formatı', 'error');
                         return;
