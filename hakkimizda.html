@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Violette Butik hakkında bilgi edinin. Anadolu'nun zarif dokunuşuyla modern moda anlayışı.">
+    <meta name="theme-color" content="#7B2D26">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <title>Hakkımızda | Violette Butik</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <img src="favicon.svg" alt="Violette Butik Logo">
+                <span>Violette Butik</span>
+            </a>
+            <nav class="nav-desktop">
+                <a href="index.html">Ana Sayfa</a>
+                <a href="index.html#kategoriler">Kategoriler</a>
+                <a href="index.html#yeni-urunler">En Yeniler</a>
+                <a href="index.html#cok-satanlar">Çok Satanlar</a>
+                <a href="hakkimizda.html" class="active">Hakkımızda</a>
+            </nav>
+            <div class="header-actions">
+                <a href="sepet.html" class="cart-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="m1 1 4 0 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    Sepet
+                    <span class="cart-badge" data-count="0"></span>
+                </a>
+                <button class="hamburger" aria-label="Menü">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBİL MENÜ -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-content">
+            <a href="index.html">Ana Sayfa</a>
+            <a href="index.html#kategoriler">Kategoriler</a>
+            <a href="index.html#yeni-urunler">En Yeniler</a>
+            <a href="index.html#cok-satanlar">Çok Satanlar</a>
+            <a href="hakkimizda.html">Hakkımızda</a>
+            <a href="sepet.html">Sepetim</a>
+        </div>
+    </div>
+
+    <!-- ANA İÇERİK -->
+    <main class="page-content">
+        <!-- HERO -->
+        <section class="about-hero">
+            <div class="decorative-pattern" style="position:absolute;inset:0;"></div>
+            <div style="position:relative;z-index:2;">
+                <h1 id="about-title">Hakkımızda</h1>
+                <p id="about-subtitle">Anadolu'nun Zarif Dokunuşu</p>
+            </div>
+        </section>
+
+        <!-- HİKAYEMİZ -->
+        <section class="about-section">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-text">
+                        <h2>Hikayemiz</h2>
+                        <div class="motif-divider" style="margin-bottom:20px;"></div>
+                        <p id="about-story">Violette Butik olarak, Anadolu'nun zengin kültürel mirasını modern çizgilerle buluşturuyoruz. Her bir ürünümüz, geleneksel el sanatlarından ilham alarak özenle seçilmiştir. Amacımız, kadınların kendilerini özel hissetmelerini sağlayacak, kaliteli ve şık parçaları sizlerle buluşturmaktır.</p>
+                    </div>
+                    <div class="about-image-block">
+                        <div class="about-pattern"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MİSYON & VİZYON -->
+        <section class="about-section" style="background: var(--bg-alt);">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-image-block" style="order:2;">
+                        <div class="about-pattern"></div>
+                    </div>
+                    <div class="about-text" style="order:1;">
+                        <h2>Misyonumuz</h2>
+                        <div class="motif-divider" style="margin-bottom:20px;"></div>
+                        <p id="about-mission">Anadolu'nun eşsiz dokularını ve motiflerini günümüz modasıyla harmanlayarak, her kadının dolabında olması gereken zamansız parçalar sunmak.</p>
+                        <br>
+                        <h2>Vizyonumuz</h2>
+                        <div class="motif-divider" style="margin-bottom:20px;"></div>
+                        <p id="about-vision">Türk modasının özgün kimliğini dünyaya taşıyan, sürdürülebilir ve etik bir marka olmak.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEĞERLERİMİZ -->
+        <section class="about-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Değerlerimiz</h2>
+                    <div class="motif-divider"></div>
+                </div>
+                <div class="about-values" id="about-values-container">
+                    <div class="about-value-card">
+                        <span class="value-icon">✨</span>
+                        <h4>Kalite</h4>
+                        <p>Kalite ve özen her şeyin önünde</p>
+                    </div>
+                    <div class="about-value-card">
+                        <span class="value-icon">🌿</span>
+                        <h4>Kültür</h4>
+                        <p>Anadolu kültürüne saygı ve bağlılık</p>
+                    </div>
+                    <div class="about-value-card">
+                        <span class="value-icon">💎</span>
+                        <h4>Memnuniyet</h4>
+                        <p>Müşteri memnuniyeti odaklı hizmet</p>
+                    </div>
+                    <div class="about-value-card">
+                        <span class="value-icon">🌍</span>
+                        <h4>Sürdürülebilirlik</h4>
+                        <p>Sürdürülebilir ve etik moda anlayışı</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- İLETİŞİM -->
+        <section class="about-section" style="background: var(--bg-alt);">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Bize Ulaşın</h2>
+                    <div class="motif-divider"></div>
+                    <p>Sorularınız veya önerileriniz için bize WhatsApp üzerinden ulaşabilirsiniz.</p>
+                </div>
+                <div style="text-align: center;">
+                    <a href="https://wa.me/905432105555" target="_blank" rel="noopener noreferrer" class="whatsapp-btn" style="display:inline-flex; max-width:320px;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        WhatsApp ile İletişim
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="favicon.svg" alt="Violette Butik">
+                        <span>Violette Butik</span>
+                    </div>
+                    <p>Anadolu'nun zengin kültürel mirasını modern çizgilerle buluşturan özel butik koleksiyonlar.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Hızlı Erişim</h4>
+                    <a href="index.html">Ana Sayfa</a>
+                    <a href="index.html#kategoriler">Kategoriler</a>
+                    <a href="index.html#yeni-urunler">En Yeniler</a>
+                    <a href="index.html#cok-satanlar">Çok Satanlar</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Bilgi</h4>
+                    <a href="hakkimizda.html">Hakkımızda</a>
+                    <a href="sepet.html">Sepetim</a>
+                </div>
+                <div class="footer-col">
+                    <h4>İletişim</h4>
+                    <p>WhatsApp üzerinden bize ulaşabilirsiniz.</p>
+                    <a href="https://wa.me/905432105555" target="_blank" rel="noopener noreferrer" style="color: #25D366; font-weight: 600;">WhatsApp ile İletişim</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Violette Butik. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var s = STORE_DATA.settings.about;
+            if (s.title) document.getElementById('about-title').textContent = s.title;
+            if (s.subtitle) document.getElementById('about-subtitle').textContent = s.subtitle;
+            if (s.story) document.getElementById('about-story').textContent = s.story;
+            if (s.mission) document.getElementById('about-mission').textContent = s.mission;
+            if (s.vision) document.getElementById('about-vision').textContent = s.vision;
+        });
+    </script>
+</body>
+</html>

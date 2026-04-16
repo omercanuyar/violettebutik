@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /violette-y0netim-p4nel.html
+Disallow: /js/admin.js

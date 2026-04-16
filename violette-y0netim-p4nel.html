@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#2C1810">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta name="referrer" content="no-referrer">
+    <title>Yönetim</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- GİRİŞ EKRANI -->
+    <div class="admin-login-page" id="admin-login-page">
+        <div class="admin-login-card">
+            <h2>Yönetim Paneli</h2>
+            <p class="subtitle">Devam etmek için giriş yapın</p>
+
+            <!-- İLK KURULUM -->
+            <div id="setup-section" style="display:none;">
+                <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px;">İlk kurulum: Yönetici bilgilerinizi belirleyin.</p>
+                <div class="form-group">
+                    <label>Kullanıcı Adı <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="setup-username" placeholder="Kullanıcı adı" maxlength="50" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Şifre <span class="required">*</span></label>
+                    <input type="password" class="form-input" id="setup-password" placeholder="Güçlü bir şifre belirleyin" maxlength="100" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label>Şifre Tekrar <span class="required">*</span></label>
+                    <input type="password" class="form-input" id="setup-password2" placeholder="Şifrenizi tekrar girin" maxlength="100" autocomplete="new-password">
+                </div>
+                <div class="login-error" id="setup-error"></div>
+                <button class="btn btn-primary btn-block btn-lg" id="setup-btn" type="button">Kurulumu Tamamla</button>
+            </div>
+
+            <!-- GİRİŞ FORMU -->
+            <form id="login-form" style="display:none;" autocomplete="off">
+                <div class="login-error" id="login-error"></div>
+                <div class="form-group">
+                    <label>Kullanıcı Adı</label>
+                    <input type="text" class="form-input" id="login-username" placeholder="Kullanıcı adınız" maxlength="50" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" class="form-input" id="login-password" placeholder="Şifreniz" maxlength="100" autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Giriş Yap</button>
+            </form>
+
+            <div id="lockout-section" style="display:none;">
+                <p class="lockout-msg" id="lockout-msg">Çok fazla hatalı deneme. Lütfen bekleyin...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMİN DASHBOARD -->
+    <div class="admin-dashboard" id="admin-dashboard">
+        <!-- MOBİL SİDEBAR TOGGLE -->
+        <button class="admin-toggle-sidebar" id="toggle-sidebar" type="button">☰</button>
+
+        <!-- SİDEBAR -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-logo">
+                <h3>Violette Butik</h3>
+                <small>Yönetim Paneli</small>
+            </div>
+            <nav>
+                <a href="#" class="active" data-section="dashboard-section">
+                    📊 Dashboard
+                </a>
+                <a href="#" data-section="products-section">
+                    🛍️ Ürünler
+                </a>
+                <a href="#" data-section="categories-section">
+                    🏷️ Kategoriler
+                </a>
+                <a href="#" data-section="settings-section">
+                    ⚙️ Ayarlar
+                </a>
+                <a href="#" data-section="export-section">
+                    📤 Dışa Aktar
+                </a>
+                <a href="#" id="logout-btn" style="margin-top:20px; color: rgba(255,255,255,0.4);">
+                    🚪 Çıkış Yap
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ANA İÇERİK -->
+        <main class="admin-main">
+            <!-- DASHBOARD -->
+            <div class="admin-section active" id="dashboard-section">
+                <div class="admin-header">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="admin-stats">
+                    <div class="admin-stat-card">
+                        <div class="stat-value" id="stat-products">0</div>
+                        <div class="stat-label">Toplam Ürün</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-value" id="stat-categories">0</div>
+                        <div class="stat-label">Kategori</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-value" id="stat-new">0</div>
+                        <div class="stat-label">Yeni Ürün</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-value" id="stat-sale">0</div>
+                        <div class="stat-label">İndirimli</div>
+                    </div>
+                </div>
+                <h3 style="margin-bottom:16px;">Son Eklenen Ürünler</h3>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table" id="recent-products-table">
+                        <thead>
+                            <tr>
+                                <th>Görsel</th>
+                                <th>Ürün Adı</th>
+                                <th>Kategori</th>
+                                <th>Fiyat</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-products-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ÜRÜNLER -->
+            <div class="admin-section" id="products-section">
+                <div class="admin-header">
+                    <h1>Ürünler</h1>
+                    <button class="btn btn-primary" id="btn-add-product" type="button">+ Yeni Ürün Ekle</button>
+                </div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Görsel</th>
+                                <th>Ürün Adı</th>
+                                <th>Kategori</th>
+                                <th>Fiyat</th>
+                                <th>İndirimli</th>
+                                <th>Durum</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="products-empty" style="display:none;">
+                    <h3>Henüz ürün eklenmemiş</h3>
+                    <p>"Yeni Ürün Ekle" butonuyla ilk ürününüzü ekleyin.</p>
+                </div>
+            </div>
+
+            <!-- KATEGORİLER -->
+            <div class="admin-section" id="categories-section">
+                <div class="admin-header">
+                    <h1>Kategoriler</h1>
+                </div>
+                <div style="max-width:500px;">
+                    <div class="form-group" style="display:flex;gap:10px;">
+                        <input type="text" class="form-input" id="new-category-input" placeholder="Yeni kategori adı" maxlength="50">
+                        <button class="btn btn-primary" id="btn-add-category" type="button">Ekle</button>
+                    </div>
+                    <div id="categories-list" style="margin-top:16px;"></div>
+                </div>
+            </div>
+
+            <!-- AYARLAR -->
+            <div class="admin-section" id="settings-section">
+                <div class="admin-header">
+                    <h1>Ayarlar</h1>
+                </div>
+                <div style="max-width:600px;">
+                    <div class="form-group">
+                        <label>Mağaza Adı</label>
+                        <input type="text" class="form-input" id="setting-store-name" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Slogan</label>
+                        <input type="text" class="form-input" id="setting-tagline" maxlength="200">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp Numara (ülke kodu ile, boşluksuz)</label>
+                        <input type="text" class="form-input" id="setting-whatsapp" maxlength="20" placeholder="905XXXXXXXXX">
+                    </div>
+                    <h3 style="margin:24px 0 16px;">Hakkımızda İçeriği</h3>
+                    <div class="form-group">
+                        <label>Hikaye</label>
+                        <textarea class="form-input" id="setting-about-story" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Misyon</label>
+                        <textarea class="form-input" id="setting-about-mission" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Vizyon</label>
+                        <textarea class="form-input" id="setting-about-vision" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="btn-save-settings" type="button">Ayarları Kaydet</button>
+                </div>
+            </div>
+
+            <!-- DIŞA AKTAR -->
+            <div class="admin-section" id="export-section">
+                <div class="admin-header">
+                    <h1>Veriyi Dışa Aktar</h1>
+                </div>
+                <div style="max-width:600px;">
+                    <p style="color:var(--text-light);margin-bottom:20px;">
+                        Ürün verilerinizi <strong>data.js</strong> dosyası olarak dışa aktarın. 
+                        Bu dosyayı projenizin <code>js/</code> klasörüne koyarak sitenizi güncelleyebilirsiniz.
+                    </p>
+                    <button class="btn btn-primary btn-lg" id="btn-export" type="button">📥 data.js Olarak İndir</button>
+                    <br><br>
+                    <h3 style="margin-bottom:12px;">Veri İçe Aktar</h3>
+                    <p style="color:var(--text-light);margin-bottom:12px;">Mevcut bir data.js dosyasından veri yükleyin.</p>
+                    <input type="file" id="import-file" accept=".js" style="display:none;">
+                    <button class="btn btn-secondary" id="btn-import" type="button">📤 data.js Yükle</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ÜRÜN EKLEME/DÜZENLEME MODAL -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal" style="max-width:640px;">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Yeni Ürün Ekle</h3>
+                <button class="modal-close" id="close-product-modal" type="button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form" class="admin-product-form" novalidate>
+                    <input type="hidden" id="product-edit-id">
+                    <div class="form-group">
+                        <label>Ürün Adı <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="product-name" placeholder="Ürün adını girin" required maxlength="150">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Kategori <span class="required">*</span></label>
+                            <select class="form-input" id="product-category" required>
+                                <option value="">Kategori seçin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fiyat (₺) <span class="required">*</span></label>
+                            <input type="number" class="form-input" id="product-price" placeholder="0.00" required min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>İndirimli Fiyat (₺)</label>
+                            <input type="number" class="form-input" id="product-discount-price" placeholder="Boş bırakılabilir" min="0" step="0.01">
+                            <span class="form-hint">Boş bırakırsanız indirim gösterilmez</span>
+                        </div>
+                        <div class="form-group" style="display:flex;flex-direction:column;justify-content:center;gap:12px;padding-top:20px;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="product-is-new"> Yeni Ürün
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="product-is-bestseller"> Çok Satan
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Açıklama</label>
+                        <textarea class="form-input" id="product-description" rows="3" placeholder="Ürün açıklaması..." maxlength="1000"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ürün Görselleri</label>
+                        <div class="image-upload-area" id="image-upload-area">
+                            <p>📷 Görsel yüklemek için tıklayın veya sürükleyin</p>
+                            <p style="font-size:0.8rem;">Maks. 3 görsel, JPEG/PNG/WebP</p>
+                        </div>
+                        <input type="file" id="image-file-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none;">
+                        <div class="image-previews" id="image-previews"></div>
+                    </div>
+                    <div class="modal-footer" style="padding:0;border:none;margin-top:8px;">
+                        <button type="button" class="btn btn-secondary" id="cancel-product-btn">İptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SİLME ONAY MODAL -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal" style="max-width:400px;">
+            <div class="modal-header">
+                <h3>Ürünü Sil</h3>
+                <button class="modal-close" id="close-delete-modal" type="button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Bu ürünü silmek istediğinize emin misiniz? Bu işlem geri alınamaz.</p>
+                <p style="font-weight:600;margin-top:8px;" id="delete-product-name"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-delete-btn" type="button">İptal</button>
+                <button class="btn btn-danger" id="confirm-delete-btn" type="button">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
