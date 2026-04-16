@@ -7,7 +7,7 @@ var STORE_DATA = {
     settings: {
         storeName: "Violette Butik",
         tagline: "Anadolu'nun Zarif Dokunuşu",
-        whatsappNumber: "905432105555",
+        whatsappNumber: "90511111111",
         firebaseURL: "https://violette-butik-default-rtdb.europe-west1.firebasedatabase.app",
         currency: "₺",
         about: {
